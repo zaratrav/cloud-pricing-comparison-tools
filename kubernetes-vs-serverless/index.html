@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kubernetes vs Serverless Cost Comparison</title>
+<link rel="stylesheet" href="style.css">
+    <meta name="google-site-verification" content="PkLa_ViOo6FAHpvh8SacceMb95o9tePRdrqLNBz9X1M" />
+</head>
+<body>
+
+<h1>Kubernetes vs Serverless Cost Comparison</h1>
+
+<p>Running workloads on Kubernetes vs serverless impacts scaling, management, and cost. This tool compares both approaches.</p>
+
+<p>This tool compares two pricing models. Enter your estimated usage and cost per unit for each option.</p>
+
+<label>Usage amount:</label>
+<input id="usage" type="number" placeholder="e.g. 10000">
+
+<label>Option A cost per unit ($):</label>
+<input id="a" type="number" step="0.0001" placeholder="e.g. 0.01">
+
+<label>Option B cost per unit ($):</label>
+<input id="b" type="number" step="0.0001" placeholder="e.g. 0.02">
+
+<button onclick="calc()">Compare</button>
+
+<h3>Comparison Result</h3>
+<p id="result"></p>
+
+<h3>Explore other comparisons</h3>
+<ul>
+<li><a href="../firebase-vs-supabase/index.html">Firebase vs Supabase Cost at Scale</a></li><li><a href="../vercel-vs-cloudflare/index.html">Vercel vs Cloudflare Workers Pricing Simulator</a></li><li><a href="../stripe-vs-paypal/index.html">Stripe vs PayPal Real Fee Calculator by Country</a></li><li><a href="../openai-vs-huggingface/index.html">OpenAI vs HuggingFace Inference Cost Estimator</a></li><li><a href="../lambda-vs-ec2/index.html">AWS Lambda vs EC2 Real Usage Cost Tool</a></li></ul><script src='script.js'></script></body></html>
