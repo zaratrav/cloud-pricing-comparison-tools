@@ -2,23 +2,824 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="google-site-verification" content="uQVQvib9O00oQFIT-tXdnkU3Vh5VSFZw2b3WhCHTCns
-" />
-<title>Cloud Pricing Comparison Tools</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="uQVQvib9O00oQFIT-tXdnkU3Vh5VSFZw2b3WhCHTCns" />
+<title>AI Cloud Pricing Models Comparison – GPU, LLM API & Compute Cost Guide 2026</title>
+<meta name="description" content="Compare AI cloud pricing models: on-demand vs reserved vs spot instances. GPU pricing comparison across AWS, GCP, Azure, Lambda, CoreWeave and RunPod. Includes LLM API cost calculator.">
+<link rel="canonical" href="https://franrivalbigprojects.github.io/cloud-pricing-tools/">
+
+<meta property="og:title" content="AI Cloud Pricing Models Comparison – GPU & LLM Cost Guide 2026">
+<meta property="og:description" content="Compare AI compute cloud pricing models. GPU cost comparison across providers, LLM API token calculator, and workload pricing model recommender.">
+<meta property="og:type" content="website">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AI Cloud Pricing Models Comparison",
+  "description": "Compare AI compute cloud pricing models including on-demand, reserved, spot, and savings plans across AWS, GCP, Azure, and GPU cloud providers.",
+  "url": "https://franrivalbigprojects.github.io/cloud-pricing-tools/",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the main AI cloud pricing models?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The main AI cloud pricing models are: on-demand (pay per hour with no commitment), reserved instances (1-3 year commitment for 30-72% discount), spot/preemptible instances (cheapest but interruptible, 60-90% discount), and savings plans (flexible commitment for 20-40% discount). For LLM APIs, pricing is per-token: input tokens and output tokens are billed separately." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which cloud provider has the cheapest GPU for AI?",
+      "acceptedAnswer": { "@type": "Answer", "text": "As of 2026, specialized GPU cloud providers like Lambda Labs, RunPod, and CoreWeave typically offer cheaper GPU prices than hyperscalers (AWS, GCP, Azure). An H100 80GB on Lambda Labs costs around $2.49/hr on-demand vs $5.12/hr on AWS. For spot instances, prices can be 60-80% lower but with interruption risk." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between on-demand and reserved cloud pricing?",
+      "acceptedAnswer": { "@type": "Answer", "text": "On-demand pricing charges per hour with no commitment — highest flexibility, highest cost. Reserved instances require a 1 or 3-year commitment in exchange for 30-72% discounts. Reserved is best for stable, predictable AI workloads running 8+ hours daily. On-demand is better for experimental, bursty, or short-duration training jobs." }
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #09090f;
+  --bg2: #0f0f1a;
+  --bg3: #14141f;
+  --border: #1e1e30;
+  --border2: #252540;
+  --text: #e2e2f0;
+  --muted: #6868a0;
+  --accent: #7c3aed;
+  --accent-light: #13082a;
+  --blue: #3b82f6;
+  --blue-dim: #0a1628;
+  --green: #10b981;
+  --green-dim: #021a10;
+  --orange: #f59e0b;
+  --orange-dim: #1a1000;
+  --red: #ef4444;
+  --red-dim: #1a0505;
+  --cyan: #06b6d4;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.65; }
+.container { max-width: 960px; margin: 0 auto; padding: 0 22px; }
+
+/* HEADER */
+header { padding: 44px 0 32px; border-bottom: 1px solid var(--border); }
+
+.breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 14px; letter-spacing: 0.03em; }
+.breadcrumb a { color: var(--muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+
+h1 { font-family: var(--sans); font-size: clamp(22px, 4vw, 36px); font-weight: 600; line-height: 1.12; margin-bottom: 12px; }
+h1 em { color: var(--accent); font-style: normal; }
+
+.lead { font-size: 15px; color: var(--muted); max-width: 600px; margin-bottom: 22px; }
+
+.header-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { font-family: var(--mono); font-size: 10px; padding: 3px 10px; border: 1px solid var(--border2); border-radius: 20px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.pill.hi { border-color: var(--accent); color: var(--accent); }
+
+/* NAV */
+.nav-bar { background: var(--bg2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.nav-bar .container { display: flex; overflow-x: auto; }
+.nav-bar a { font-family: var(--mono); font-size: 11px; color: var(--muted); text-decoration: none; padding: 11px 14px; white-space: nowrap; border-bottom: 2px solid transparent; text-transform: uppercase; letter-spacing: 0.04em; transition: color 0.15s, border-color 0.15s; }
+.nav-bar a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* SECTIONS */
+section { padding: 52px 0; border-bottom: 1px solid var(--border); }
+h2 { font-family: var(--sans); font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.section-lead { color: var(--muted); font-size: 14px; margin-bottom: 26px; max-width: 580px; }
+h3 { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--muted); margin: 28px 0 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+p { margin-bottom: 12px; color: var(--muted); font-size: 14px; }
+p:last-child { margin-bottom: 0; }
+
+/* PRICING MODEL CARDS */
+.model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 8px; }
+
+.model-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; position: relative; overflow: hidden; }
+.model-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.model-card.mc-od::before  { background: var(--blue); }
+.model-card.mc-ri::before  { background: var(--green); }
+.model-card.mc-sp::before  { background: var(--orange); }
+.model-card.mc-sv::before  { background: var(--accent); }
+.model-card.mc-tok::before { background: var(--cyan); }
+
+.model-name { font-family: var(--mono); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.model-name.blue   { color: var(--blue); }
+.model-name.green  { color: var(--green); }
+.model-name.orange { color: var(--orange); }
+.model-name.purple { color: var(--accent); }
+.model-name.cyan   { color: var(--cyan); }
+
+.model-discount { font-family: var(--mono); font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.model-desc { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 12px; }
+.model-best { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; display: inline-block; }
+.mb-blue   { background: var(--blue-dim);   color: var(--blue); }
+.mb-green  { background: var(--green-dim);  color: var(--green); }
+.mb-orange { background: var(--orange-dim); color: var(--orange); }
+.mb-purple { background: var(--accent-light); color: var(--accent); }
+.mb-cyan   { background: #041a1e; color: var(--cyan); }
+
+/* RECOMMENDER TOOL */
+.recommender { background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px; overflow: hidden; }
+.rec-head { background: var(--bg3); border-bottom: 1px solid var(--border); padding: 14px 22px; font-family: var(--mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.rec-body { padding: 24px; }
+
+.rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+
+.field label { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; }
+.field input, .field select { width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 9px 11px; border-radius: 5px; outline: none; transition: border-color 0.2s; }
+.field input:focus, .field select:focus { border-color: var(--accent); }
+.field input::placeholder { color: var(--muted); }
+
+.rec-btn { width: 100%; background: var(--accent); color: #fff; border: none; font-family: var(--mono); font-size: 12px; font-weight: 600; padding: 12px; border-radius: 5px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: opacity 0.2s; }
+.rec-btn:hover { opacity: 0.85; }
+
+.rec-result { display: none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+.rec-result.visible { display: block; }
+
+.rec-winner { background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 18px; margin-bottom: 16px; }
+.rec-winner-label { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.rec-winner-model { font-family: var(--mono); font-size: 18px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+.rec-winner-reason { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+.rec-compare { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+
+.rec-option { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 14px; }
+.rec-option.winner { border-color: var(--accent); }
+.rec-option-name { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.rec-option-cost { font-family: var(--mono); font-size: 18px; font-weight: 600; margin-bottom: 2px; }
+.rec-option-cost.best  { color: var(--green); }
+.rec-option-cost.mid   { color: var(--orange); }
+.rec-option-cost.worst { color: var(--red); }
+.rec-option-note { font-size: 11px; color: var(--muted); }
+
+/* GPU COMPARISON TABLE */
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.filter-label { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.fbtn { font-family: var(--mono); font-size: 10px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg3); color: var(--muted); cursor: pointer; text-transform: uppercase; letter-spacing: 0.04em; transition: all 0.15s; }
+.fbtn:hover, .fbtn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.gpu-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; background: var(--bg2); font-size: 13px; }
+thead { background: var(--bg3); }
+thead th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; padding: 11px 13px; text-align: left; color: var(--muted); white-space: nowrap; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--bg3); }
+tbody tr[data-hidden] { display: none; }
+tbody td { padding: 11px 13px; vertical-align: middle; }
+.td-gpu { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text); }
+.td-vram { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.td-provider { font-size: 12px; color: var(--muted); }
+.td-price { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+.price-low  { color: var(--green); }
+.price-mid  { color: var(--orange); }
+.price-high { color: var(--red); }
+
+.tag { display: inline-block; font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
+.tag-hyper  { background: #0a1628; color: var(--blue); }
+.tag-spec   { background: var(--accent-light); color: var(--accent); }
+.tag-spot   { background: var(--orange-dim); color: var(--orange); }
+.tag-res    { background: var(--green-dim); color: var(--green); }
+
+/* LLM CALC */
+.llm-calc { background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px; overflow: hidden; }
+.llm-head { background: var(--bg3); border-bottom: var(--border) 1px solid; padding: 14px 22px; font-family: var(--mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.llm-body { padding: 22px; }
+
+.llm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+
+.llm-result { display: none; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 18px; }
+.llm-result.visible { display: block; }
+.llm-result-title { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+
+.llm-provider-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+
+.llm-provider-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; }
+.llm-provider-card.cheapest { border-color: var(--green); }
+.llm-prov-name { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.llm-prov-model { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.llm-prov-cost { font-family: var(--mono); font-size: 20px; font-weight: 600; margin-bottom: 2px; }
+.llm-prov-cost.best  { color: var(--green); }
+.llm-prov-cost.mid   { color: var(--orange); }
+.llm-prov-cost.worst { color: var(--red); }
+.llm-prov-breakdown { font-size: 11px; color: var(--muted); }
+
+/* COMPARISON SECTION TOOLS */
+.comp-tools { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 8px; }
+.comp-tool-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 7px; padding: 18px 20px; text-decoration: none; display: block; transition: border-color 0.15s; }
+.comp-tool-card:hover { border-color: var(--accent); }
+.ct-title { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.ct-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.ct-arrow { color: var(--accent); font-family: var(--mono); font-size: 12px; margin-top: 8px; display: block; }
+
+/* FAQ */
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-q { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 0; cursor: pointer; font-size: 14px; font-weight: 500; user-select: none; color: var(--text); }
+.faq-toggle { font-family: var(--mono); font-size: 18px; color: var(--accent); flex-shrink: 0; transition: transform 0.2s; line-height: 1; }
+.faq-item.open .faq-toggle { transform: rotate(45deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; font-size: 14px; color: var(--muted); line-height: 1.7; }
+.faq-item.open .faq-a { max-height: 500px; padding-bottom: 16px; }
+
+/* INFO BLOCKS */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
+.info-block h3 { margin-top: 0; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 26px 0; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+footer .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+footer nav { display: flex; gap: 14px; flex-wrap: wrap; }
+footer nav a { color: var(--muted); text-decoration: none; }
+footer nav a:hover { color: var(--accent); }
+
+@media (max-width: 600px) {
+  .rec-grid { grid-template-columns: 1fr; }
+  .info-grid { grid-template-columns: 1fr; }
+  footer .container { flex-direction: column; }
+}
+</style>
 </head>
+
 <body>
 
-<h1>Cloud Pricing Comparison Tools</h1>
+<header>
+  <div class="container">
+    <p class="breadcrumb"><a href="index.html">Cloud Pricing Tools</a> &gt; AI Compute Comparison</p>
+    <h1>AI Compute Cloud<br><em>Pricing Models</em> Comparison</h1>
+    <p class="lead">Compare on-demand, reserved, spot, and savings plan pricing models across AWS, GCP, Azure, Lambda, CoreWeave, and RunPod. Includes GPU price comparison and LLM API token cost calculator.</p>
+    <div class="header-pills">
+      <span class="pill hi">Pricing model recommender</span>
+      <span class="pill">GPU price comparison</span>
+      <span class="pill">LLM API calculator</span>
+      <span class="pill">Updated May 2026</span>
+    </div>
+  </div>
+</header>
 
-<p>Choosing between cloud providers and services is not just about features, but about cost efficiency at scale. Different pricing models can lead to drastically different outcomes.</p>
+<nav class="nav-bar" aria-label="Page sections">
+  <div class="container">
+    <a href="#models">Pricing Models</a>
+    <a href="#recommender">Recommender</a>
+    <a href="#gpu-compare">GPU Compare</a>
+    <a href="#llm-calc">LLM Calc</a>
+    <a href="#guide">Guide</a>
+    <a href="#tools">Tools</a>
+    <a href="#faq">FAQ</a>
+  </div>
+</nav>
 
-<h3>Compare services</h3>
-<ul>
-<li><a href="firebase-vs-supabase/index.html">Firebase vs Supabase Cost at Scale</a> - Comparing Firebase and Supabase costs becomes critical as your app scales. This tool estimates how pricing differs based on usage growth.</li><li><a href="vercel-vs-cloudflare/index.html">Vercel vs Cloudflare Workers Pricing Simulator</a> - Vercel and Cloudflare Workers use different pricing models. This simulator compares costs based on requests, execution, and bandwidth.</li><li><a href="stripe-vs-paypal/index.html">Stripe vs PayPal Real Fee Calculator by Country</a> - Payment processors charge different fees depending on region and transaction volume. This tool compares Stripe and PayPal costs.</li><li><a href="openai-vs-huggingface/index.html">OpenAI vs HuggingFace Inference Cost Estimator</a> - AI inference pricing varies based on tokens, requests, and infrastructure. This estimator compares OpenAI and HuggingFace costs.</li><li><a href="lambda-vs-ec2/index.html">AWS Lambda vs EC2 Real Usage Cost Tool</a> - Lambda and EC2 follow different billing models. This tool compares serverless vs traditional compute cost based on usage.</li><li><a href="kubernetes-vs-serverless/index.html">Kubernetes vs Serverless Cost Comparison</a> - Running workloads on Kubernetes vs serverless impacts scaling, management, and cost. This tool compares both approaches.</li>
-</ul>
+<!-- PRICING MODELS -->
+<section id="models">
+  <div class="container">
+    <h2>AI Cloud Pricing Models Explained</h2>
+    <p class="section-lead">Five distinct pricing models govern AI compute costs. Understanding each one determines whether you overpay by 2–5× or optimize correctly for your workload.</p>
 
-<p>Each tool helps you evaluate cost differences between competing platforms based on real usage scenarios.</p>
+    <div class="model-grid">
+      <div class="model-card mc-od">
+        <div class="model-name blue">On-Demand</div>
+        <div class="model-discount" style="color:var(--blue)">Base price</div>
+        <div class="model-desc">Pay per hour or second with zero commitment. Highest flexibility — start and stop anytime. Highest unit cost. Best for experiments, short training runs, and bursty inference.</div>
+        <span class="model-best mb-blue">Best for: Experiments</span>
+      </div>
 
+      <div class="model-card mc-ri">
+        <div class="model-name green">Reserved Instances</div>
+        <div class="model-discount" style="color:var(--green)">30–72% off</div>
+        <div class="model-desc">1-year or 3-year commitments to a specific GPU/instance type. Steep discounts for predictable workloads. Upfront or monthly payment options. Risk: wasted spend if usage drops.</div>
+        <span class="model-best mb-green">Best for: Production workloads</span>
+      </div>
+
+      <div class="model-card mc-sp">
+        <div class="model-name orange">Spot / Preemptible</div>
+        <div class="model-discount" style="color:var(--orange)">60–91% off</div>
+        <div class="model-desc">Use unused cloud capacity at massive discounts. Can be interrupted with 2-minute warning (AWS) or 30-second notice (GCP). Requires fault-tolerant workloads with checkpointing.</div>
+        <span class="model-best mb-orange">Best for: Interruptible training</span>
+      </div>
+
+      <div class="model-card mc-sv">
+        <div class="model-name purple">Savings Plans</div>
+        <div class="model-discount" style="color:var(--accent)">20–40% off</div>
+        <div class="model-desc">Flexible commitment: pledge a $/hour spend for 1-3 years without locking into specific instance types. More flexible than reserved instances. AWS, GCP, and Azure all offer variants.</div>
+        <span class="model-best mb-purple">Best for: Mixed GPU workloads</span>
+      </div>
+
+      <div class="model-card mc-tok">
+        <div class="model-name cyan">Token-Based (LLM APIs)</div>
+        <div class="model-discount" style="color:var(--cyan)">Per-token</div>
+        <div class="model-desc">Pay per million tokens processed — input and output tokens billed separately. No GPU management. Covers OpenAI, Anthropic, Google Gemini, Mistral, and open-source inference APIs.</div>
+        <span class="model-best mb-cyan">Best for: Inference-only workloads</span>
+      </div>
+    </div>
+
+    <h3>Pricing model comparison at a glance</h3>
+    <div class="gpu-table-wrap">
+      <table>
+        <thead>
+          <tr><th>Model</th><th>Discount vs On-Demand</th><th>Commitment</th><th>Interruption Risk</th><th>Best Workload</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="td-gpu">On-Demand</td><td>—</td><td>None</td><td>None</td><td>Experiments, dev/test</td></tr>
+          <tr><td class="td-gpu">Reserved (1yr)</td><td>30–45% off</td><td>1 year, specific type</td><td>None</td><td>Stable production inference</td></tr>
+          <tr><td class="td-gpu">Reserved (3yr)</td><td>50–72% off</td><td>3 years, specific type</td><td>None</td><td>Long-term model serving</td></tr>
+          <tr><td class="td-gpu">Savings Plans</td><td>20–40% off</td><td>1-3 year $/hour spend</td><td>None</td><td>Mixed GPU fleet</td></tr>
+          <tr><td class="td-gpu">Spot / Preemptible</td><td>60–91% off</td><td>None</td><td>High (2-min notice)</td><td>Fault-tolerant training</td></tr>
+          <tr><td class="td-gpu">LLM API (Token)</td><td>N/A</td><td>None</td><td>None</td><td>Inference without GPU mgmt</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- RECOMMENDER -->
+<section id="recommender">
+  <div class="container">
+    <h2>Pricing Model Recommender</h2>
+    <p class="section-lead">Describe your AI workload and get a recommended pricing model with cost comparison across on-demand, reserved, and spot options.</p>
+
+    <div class="recommender">
+      <div class="rec-head">// AI Workload Pricing Model Recommender</div>
+      <div class="rec-body">
+        <div class="rec-grid">
+          <div class="field">
+            <label for="r-gpu">GPU type</label>
+            <select id="r-gpu">
+              <option value="h100">H100 80GB ($2.49–$5.12/hr)</option>
+              <option value="a100">A100 80GB ($1.79–$3.09/hr)</option>
+              <option value="a10g">A10G 24GB ($0.75–$1.53/hr)</option>
+              <option value="l40s">L40S 48GB ($1.30–$2.80/hr)</option>
+              <option value="rtx4090">RTX 4090 24GB ($0.44–$0.89/hr)</option>
+              <option value="t4">T4 16GB ($0.35–$0.75/hr)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="r-hours">Hours used per day</label>
+            <input type="number" id="r-hours" placeholder="12" min="0.5" max="24" step="0.5" value="12">
+          </div>
+          <div class="field">
+            <label for="r-months">Expected duration (months)</label>
+            <input type="number" id="r-months" placeholder="6" min="1" max="36" step="1" value="6">
+          </div>
+          <div class="field">
+            <label for="r-interruptible">Workload is interruptible?</label>
+            <select id="r-interruptible">
+              <option value="yes">Yes (training with checkpoints)</option>
+              <option value="no" selected>No (inference / real-time)</option>
+            </select>
+          </div>
+        </div>
+        <button class="rec-btn" onclick="runRecommender()">Recommend Pricing Model</button>
+
+        <div class="rec-result" id="rec-result">
+          <div class="rec-winner" id="rec-winner"></div>
+          <div class="rec-compare" id="rec-compare"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GPU COMPARISON -->
+<section id="gpu-compare">
+  <div class="container">
+    <h2>GPU Cloud Price Comparison – H100, A100, A10G 2026</h2>
+    <p class="section-lead">Reference prices across hyperscalers (AWS, GCP, Azure) and specialized GPU cloud providers (Lambda, CoreWeave, RunPod). Filter by GPU tier or provider type.</p>
+
+    <div class="filter-row">
+      <span class="filter-label">Filter:</span>
+      <button class="fbtn active" onclick="filterGPU('all', this)">All</button>
+      <button class="fbtn" onclick="filterGPU('h100', this)">H100</button>
+      <button class="fbtn" onclick="filterGPU('a100', this)">A100</button>
+      <button class="fbtn" onclick="filterGPU('mid', this)">Mid-Range</button>
+      <button class="fbtn" onclick="filterGPU('budget', this)">Budget</button>
+      <button class="fbtn" onclick="filterGPU('hyperscaler', this)">Hyperscalers</button>
+      <button class="fbtn" onclick="filterGPU('specialist', this)">Specialist Clouds</button>
+    </div>
+
+    <div class="gpu-table-wrap">
+      <table>
+        <thead>
+          <tr><th>GPU</th><th>VRAM</th><th>Provider</th><th>On-Demand /hr</th><th>Spot /hr</th><th>1-yr Reserved /hr</th><th>Type</th></tr>
+        </thead>
+        <tbody id="gpu-tbody">
+          <!-- injected by JS -->
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px; color:var(--muted); margin-top:10px;">* Prices are reference rates as of May 2026. Actual prices vary by region and availability. Always verify on provider pricing pages.</p>
+  </div>
+</section>
+
+<!-- LLM API CALCULATOR -->
+<section id="llm-calc">
+  <div class="container">
+    <h2>LLM API Cost Calculator</h2>
+    <p class="section-lead">Calculate and compare monthly LLM API costs across OpenAI, Anthropic, Google, Mistral, and open-source inference providers. Prices per million tokens.</p>
+
+    <div class="llm-calc">
+      <div class="llm-head">// LLM API Token Cost Calculator</div>
+      <div class="llm-body">
+        <div class="llm-grid">
+          <div class="field">
+            <label for="llm-input-tok">Avg input tokens per request</label>
+            <input type="number" id="llm-input-tok" placeholder="500" min="0" value="500">
+          </div>
+          <div class="field">
+            <label for="llm-output-tok">Avg output tokens per request</label>
+            <input type="number" id="llm-output-tok" placeholder="200" min="0" value="200">
+          </div>
+          <div class="field">
+            <label for="llm-req-day">Requests per day</label>
+            <input type="number" id="llm-req-day" placeholder="1000" min="0" value="1000">
+          </div>
+          <div class="field">
+            <label for="llm-tier">Use case</label>
+            <select id="llm-tier">
+              <option value="production">Production (top models)</option>
+              <option value="cost">Cost-optimized (mid models)</option>
+              <option value="budget">Budget (small/OSS models)</option>
+            </select>
+          </div>
+        </div>
+        <button class="rec-btn" onclick="calcLLM()">Calculate LLM API Costs</button>
+        <div class="llm-result" id="llm-result"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GUIDE -->
+<section id="guide">
+  <div class="container">
+    <h2>AI Cloud Pricing Models – Complete Guide</h2>
+    <p class="section-lead">How to choose the right pricing model for training, fine-tuning, and inference workloads at different scales.</p>
+
+    <div class="info-grid">
+      <div class="info-block">
+        <h3>On-demand vs reserved — when to switch</h3>
+        <p>The break-even point for reserved instances is when your GPU utilization exceeds 40–50% of available hours. If you run an H100 for more than 10 hours/day consistently for 3+ months, a 1-year reserved instance saves money. Below that threshold, on-demand is cheaper because you avoid paying for idle hours you committed to.</p>
+      </div>
+      <div class="info-block">
+        <h3>Spot instances for AI training</h3>
+        <p>Spot instances are viable for AI training only when your training code implements checkpointing — saving model state periodically so training can resume from the last checkpoint after interruption. PyTorch and JAX both support this natively. Most distributed training frameworks (DeepSpeed, FSDP) include built-in checkpoint support. Without checkpointing, spot interruptions waste all prior compute.</p>
+      </div>
+      <div class="info-block">
+        <h3>Hyperscalers vs specialist GPU clouds</h3>
+        <p>AWS, GCP, and Azure offer deep integration with their broader ecosystems (storage, networking, MLOps tooling) but charge significant premiums for GPU compute. Specialist clouds — Lambda Labs, CoreWeave, RunPod, Vast.ai — offer GPU-only services at 40–70% lower on-demand prices with fewer managed services. Hyperscalers win on compliance, networking, and managed ML pipelines. Specialists win on raw GPU cost.</p>
+      </div>
+      <div class="info-block">
+        <h3>LLM API vs self-hosted GPU</h3>
+        <p>LLM APIs (OpenAI, Anthropic, Gemini) abstract GPU management entirely — you pay per token and scale instantly with no infrastructure overhead. Self-hosted inference on your own GPU (or rented GPU) is cheaper above ~10M tokens/day per model. Below that threshold, API pricing is almost always more economical when you factor in engineering time, model deployment, and scaling complexity.</p>
+      </div>
+    </div>
+
+    <h3>Pricing model decision tree</h3>
+    <p>Start with on-demand to validate your workload. If it runs continuously for 3+ months, evaluate reserved. If it's interruptible training, evaluate spot. If your workload is pure inference without GPU management requirements, evaluate LLM APIs first — they're often cheaper than you expect at moderate scale and eliminate all infrastructure overhead.</p>
+
+    <h3>Multi-cloud and arbitrage strategies</h3>
+    <p>GPU prices vary significantly between providers and regions. An H100 on CoreWeave costs ~$2.49/hr; on AWS it costs ~$5.12/hr for the same hardware. Production systems increasingly use multi-cloud GPU routing — training on specialist clouds (lower cost) and serving inference on hyperscalers (better latency and compliance). Tools like SkyPilot and Flyte support multi-cloud GPU workload orchestration.</p>
+  </div>
+</section>
+
+<!-- OTHER TOOLS -->
+<section id="tools">
+  <div class="container">
+    <h2>Cloud Pricing Comparison Tools</h2>
+    <p class="section-lead">Tools in this suite comparing costs between competing cloud platforms and services.</p>
+
+    <div class="comp-tools">
+      <a href="firebase-vs-supabase/index.html" class="comp-tool-card">
+        <div class="ct-title">Firebase vs Supabase Cost at Scale</div>
+        <div class="ct-desc">Compare Firebase and Supabase costs as your app scales. Estimate pricing based on usage growth.</div>
+        <span class="ct-arrow">→ Open tool</span>
+      </a>
+      <a href="vercel-vs-cloudflare/index.html" class="comp-tool-card">
+        <div class="ct-title">Vercel vs Cloudflare Workers</div>
+        <div class="ct-desc">Simulate costs based on requests, execution time, and bandwidth across both platforms.</div>
+        <span class="ct-arrow">→ Open tool</span>
+      </a>
+      <a href="stripe-vs-paypal/index.html" class="comp-tool-card">
+        <div class="ct-title">Stripe vs PayPal Fee Calculator</div>
+        <div class="ct-desc">Compare payment processor fees by country and transaction volume.</div>
+        <span class="ct-arrow">→ Open tool</span>
+      </a>
+      <a href="openai-vs-huggingface/index.html" class="comp-tool-card">
+        <div class="ct-title">OpenAI vs HuggingFace Inference Cost</div>
+        <div class="ct-desc">Compare inference pricing based on tokens, requests, and infrastructure choice.</div>
+        <span class="ct-arrow">→ Open tool</span>
+      </a>
+      <a href="lambda-vs-ec2/index.html" class="comp-tool-card">
+        <div class="ct-title">AWS Lambda vs EC2 Cost Tool</div>
+        <div class="ct-desc">Compare serverless vs traditional compute costs based on real usage patterns.</div>
+        <span class="ct-arrow">→ Open tool</span>
+      </a>
+      <a href="kubernetes-vs-serverless/index.html" class="comp-tool-card">
+        <div class="ct-title">Kubernetes vs Serverless Cost</div>
+        <div class="ct-desc">Compare orchestration approaches by scaling, management overhead, and cost.</div>
+        <span class="ct-arrow">→ Open tool</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <h2>AI Cloud Pricing – FAQ</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What are the main AI cloud pricing models?<span class="faq-toggle">+</span></div>
+      <div class="faq-a">The five main AI cloud pricing models are: (1) On-demand — pay per hour, no commitment, highest cost; (2) Reserved instances — 1-3 year commitment for 30-72% discount; (3) Spot/preemptible — use unused capacity at 60-91% discount with interruption risk; (4) Savings plans — flexible $/hour commitment for 20-40% discount without locking into specific instance types; (5) Token-based — per-million-token billing for LLM APIs with no GPU management required.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Which cloud provider has the cheapest H100 GPU?<span class="faq-toggle">+</span></div>
+      <div class="faq-a">As of May 2026, specialist GPU clouds offer significantly lower H100 prices than hyperscalers. Lambda Labs: ~$2.49/hr on-demand. CoreWeave: ~$2.65/hr. RunPod: ~$2.79/hr. AWS p4d.24xlarge (A100): ~$3.09/hr. AWS p5 (H100): ~$5.12/hr. GCP A3 (H100): ~$5.12/hr. The hyperscaler premium is real — you pay 2-3× more for H100s on AWS/GCP compared to Lambda or CoreWeave, in exchange for better ecosystem integration and compliance certifications.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">When should I use spot instances for AI training?<span class="faq-toggle">+</span></div>
+      <div class="faq-a">Use spot instances for AI training when: your training code implements checkpointing (saves state every N steps), your training job is long enough that the discount (60-91%) outweighs restart overhead, and you're not on a tight deadline where interruptions are unacceptable. Spot is ideal for pre-training, fine-tuning, and hyperparameter sweeps. Avoid spot for inference serving, time-sensitive training, and any job where losing 1+ hours of compute would be catastrophic without checkpointing.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">How do I calculate LLM API costs?<span class="faq-toggle">+</span></div>
+      <div class="faq-a">LLM API cost = (input tokens × input price per million) + (output tokens × output price per million). For example, GPT-4o at $2.50/M input tokens and $10.00/M output tokens: 500 input tokens + 200 output tokens per request × 1,000 requests/day = 500K input tokens + 200K output tokens daily = $1.25 + $2.00 = $3.25/day = ~$97.50/month. Use the LLM API calculator above to compare across providers automatically.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What is the difference between hyperscaler and specialist GPU clouds?<span class="faq-toggle">+</span></div>
+      <div class="faq-a">Hyperscalers (AWS, GCP, Azure) offer GPU compute as part of broader cloud platforms with managed ML services (SageMaker, Vertex AI, Azure ML), VPC networking, compliance certifications (SOC2, HIPAA, FedRAMP), and global regions. They charge a significant premium for GPU compute. Specialist GPU clouds (Lambda Labs, CoreWeave, RunPod, Vast.ai) focus exclusively on GPU compute at 40-70% lower prices but offer fewer managed services and fewer compliance certifications. Choose specialists for cost-optimized training; consider hyperscalers when compliance, ecosystem integration, or managed MLOps matter.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Is it cheaper to use LLM APIs or host my own model?<span class="faq-toggle">+</span></div>
+      <div class="faq-a">LLM APIs are cheaper than self-hosting below roughly 5-15M tokens/day depending on model size and GPU type. Above that volume, renting GPU capacity to run your own open-source model (Llama, Mistral, Qwen) becomes more economical. The break-even calculation: (GPU cost/hr × hrs/day × 30) vs (tokens/day × 30 × API price per token). Factor in engineering overhead — self-hosting requires infrastructure management, model updates, and scaling logic that add hidden costs.</div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span>AI Cloud Pricing Models Comparison — May 2026</span>
+    <nav>
+      <a href="#models">Models</a>
+      <a href="#recommender">Recommender</a>
+      <a href="#gpu-compare">GPUs</a>
+      <a href="#llm-calc">LLM Calc</a>
+      <a href="#faq">FAQ</a>
+      <a href="index.html">All Tools</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- ================================================================
+     JAVASCRIPT — ES5, NO ARROW FUNCTIONS, NO TEMPLATE LITERALS
+     ================================================================ -->
+<script>
+
+/* ── GPU DATA ── */
+var GPU_DATA = [
+  { gpu:'H100 80GB', vram:'80GB', provider:'Lambda Labs',  onDemand:2.49,  spot:null, reserved:null, tier:'h100', type:'specialist' },
+  { gpu:'H100 80GB', vram:'80GB', provider:'CoreWeave',    onDemand:2.65,  spot:null, reserved:2.10, tier:'h100', type:'specialist' },
+  { gpu:'H100 80GB', vram:'80GB', provider:'RunPod',       onDemand:2.79,  spot:1.40, reserved:null, tier:'h100', type:'specialist' },
+  { gpu:'H100 80GB', vram:'80GB', provider:'AWS (p5)',     onDemand:5.12,  spot:1.60, reserved:3.15, tier:'h100', type:'hyperscaler' },
+  { gpu:'H100 80GB', vram:'80GB', provider:'GCP (A3)',     onDemand:5.12,  spot:1.54, reserved:3.20, tier:'h100', type:'hyperscaler' },
+  { gpu:'H100 80GB', vram:'80GB', provider:'Azure (ND H100)', onDemand:4.94, spot:null, reserved:3.08, tier:'h100', type:'hyperscaler' },
+  { gpu:'A100 80GB', vram:'80GB', provider:'Lambda Labs',  onDemand:1.79,  spot:null, reserved:null, tier:'a100', type:'specialist' },
+  { gpu:'A100 80GB', vram:'80GB', provider:'CoreWeave',    onDemand:2.21,  spot:null, reserved:1.65, tier:'a100', type:'specialist' },
+  { gpu:'A100 80GB', vram:'80GB', provider:'AWS (p4de)',   onDemand:3.09,  spot:0.96, reserved:1.90, tier:'a100', type:'hyperscaler' },
+  { gpu:'A100 80GB', vram:'80GB', provider:'GCP (A2)',     onDemand:2.93,  spot:0.88, reserved:1.83, tier:'a100', type:'hyperscaler' },
+  { gpu:'L40S 48GB', vram:'48GB', provider:'CoreWeave',    onDemand:1.30,  spot:null, reserved:0.98, tier:'mid',  type:'specialist' },
+  { gpu:'L40S 48GB', vram:'48GB', provider:'Lambda Labs',  onDemand:1.99,  spot:null, reserved:null, tier:'mid',  type:'specialist' },
+  { gpu:'A10G 24GB', vram:'24GB', provider:'AWS (g5)',     onDemand:1.53,  spot:0.47, reserved:0.87, tier:'mid',  type:'hyperscaler' },
+  { gpu:'A10G 24GB', vram:'24GB', provider:'RunPod',       onDemand:0.75,  spot:0.35, reserved:null, tier:'mid',  type:'specialist' },
+  { gpu:'RTX 4090',  vram:'24GB', provider:'RunPod',       onDemand:0.44,  spot:0.20, reserved:null, tier:'budget', type:'specialist' },
+  { gpu:'RTX 4090',  vram:'24GB', provider:'Vast.ai',      onDemand:0.38,  spot:0.18, reserved:null, tier:'budget', type:'specialist' },
+  { gpu:'T4 16GB',   vram:'16GB', provider:'GCP',          onDemand:0.75,  spot:0.16, reserved:0.42, tier:'budget', type:'hyperscaler' },
+  { gpu:'T4 16GB',   vram:'16GB', provider:'AWS (g4dn)',   onDemand:0.53,  spot:0.16, reserved:0.30, tier:'budget', type:'hyperscaler' },
+  { gpu:'RTX 3090',  vram:'24GB', provider:'Vast.ai',      onDemand:0.28,  spot:0.12, reserved:null, tier:'budget', type:'specialist' },
+  { gpu:'RTX 3080',  vram:'10GB', provider:'RunPod',       onDemand:0.18,  spot:0.09, reserved:null, tier:'budget', type:'specialist' }
+];
+
+/* ── GPU recommender prices ── */
+var GPU_RECOMMENDER = {
+  h100:    { od:2.49, spot:1.40, ri1:1.74 },
+  a100:    { od:1.79, spot:0.90, ri1:1.25 },
+  a10g:    { od:0.75, spot:0.35, ri1:0.52 },
+  l40s:    { od:1.30, spot:null, ri1:0.98 },
+  rtx4090: { od:0.44, spot:0.20, ri1:null },
+  t4:      { od:0.53, spot:0.16, ri1:0.30 }
+};
+
+/* ── LLM API pricing ($/M tokens input / output) ── */
+var LLM_PROVIDERS = {
+  production: [
+    { name:'OpenAI',     model:'GPT-4o',          input:2.50,  output:10.00 },
+    { name:'Anthropic',  model:'Claude Sonnet 4.6', input:3.00,  output:15.00 },
+    { name:'Google',     model:'Gemini 1.5 Pro',   input:1.25,  output:5.00  },
+    { name:'Mistral',    model:'Mistral Large',    input:2.00,  output:6.00  }
+  ],
+  cost: [
+    { name:'OpenAI',     model:'GPT-4o mini',      input:0.15,  output:0.60  },
+    { name:'Anthropic',  model:'Claude Haiku 4.5', input:0.80,  output:4.00  },
+    { name:'Google',     model:'Gemini Flash',     input:0.075, output:0.30  },
+    { name:'Mistral',    model:'Mistral Small',    input:0.10,  output:0.30  },
+    { name:'Together AI',model:'Llama 3.1 70B',   input:0.54,  output:0.54  }
+  ],
+  budget: [
+    { name:'Together AI', model:'Llama 3.1 8B',   input:0.10,  output:0.10  },
+    { name:'Groq',        model:'Llama 3.1 8B',   input:0.05,  output:0.08  },
+    { name:'Cloudflare',  model:'Llama 3.1 8B',   input:0.011, output:0.011 },
+    { name:'Ollama',      model:'Self-hosted',     input:0.00,  output:0.00  }
+  ]
+};
+
+/* ── FORMAT ── */
+function fmtUSD(n) {
+  if (n === null || n === undefined) { return '—'; }
+  return '$' + n.toFixed(2);
+}
+
+function fmtLarge(n) {
+  if (n >= 1000) { return '$' + n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  return '$' + n.toFixed(2);
+}
+
+/* ── RENDER GPU TABLE ── */
+function renderGPUTable(filter) {
+  var tbody = document.getElementById('gpu-tbody');
+  var html = '';
+
+  for (var i = 0; i < GPU_DATA.length; i++) {
+    var g = GPU_DATA[i];
+    var hidden = false;
+
+    if (filter === 'h100' && g.tier !== 'h100') { hidden = true; }
+    if (filter === 'a100' && g.tier !== 'a100') { hidden = true; }
+    if (filter === 'mid'  && g.tier !== 'mid')  { hidden = true; }
+    if (filter === 'budget' && g.tier !== 'budget') { hidden = true; }
+    if (filter === 'hyperscaler' && g.type !== 'hyperscaler') { hidden = true; }
+    if (filter === 'specialist'  && g.type !== 'specialist')  { hidden = true; }
+
+    var priceClass = g.onDemand < 1 ? 'price-low' : (g.onDemand < 3 ? 'price-mid' : 'price-high');
+    var typeTag = g.type === 'hyperscaler' ? '<span class="tag tag-hyper">Hyperscaler</span>' : '<span class="tag tag-spec">Specialist</span>';
+
+    html += '<tr' + (hidden ? ' data-hidden="true" style="display:none"' : '') + '>';
+    html += '<td class="td-gpu">' + g.gpu + '</td>';
+    html += '<td class="td-vram">' + g.vram + '</td>';
+    html += '<td class="td-provider">' + g.provider + '</td>';
+    html += '<td class="td-price ' + priceClass + '">' + fmtUSD(g.onDemand) + '/hr</td>';
+    html += '<td>' + (g.spot ? '<span class="td-price price-low">' + fmtUSD(g.spot) + '/hr</span> <span class="tag tag-spot">Spot</span>' : '<span style="color:var(--muted)">—</span>') + '</td>';
+    html += '<td>' + (g.reserved ? '<span class="td-price price-mid">' + fmtUSD(g.reserved) + '/hr</span> <span class="tag tag-res">Reserved</span>' : '<span style="color:var(--muted)">—</span>') + '</td>';
+    html += '<td>' + typeTag + '</td>';
+    html += '</tr>';
+  }
+
+  tbody.innerHTML = html;
+}
+
+function filterGPU(filter, btn) {
+  var btns = document.querySelectorAll('.fbtn');
+  for (var i = 0; i < btns.length; i++) { btns[i].className = 'fbtn'; }
+  btn.className = 'fbtn active';
+  renderGPUTable(filter);
+}
+
+/* ── RECOMMENDER ── */
+function runRecommender() {
+  var gpuKey  = document.getElementById('r-gpu').value;
+  var hours   = parseFloat(document.getElementById('r-hours').value) || 8;
+  var months  = parseInt(document.getElementById('r-months').value) || 6;
+  var canStop = document.getElementById('r-interruptible').value === 'yes';
+
+  var prices  = GPU_RECOMMENDER[gpuKey];
+  var days    = months * 30;
+  var totalH  = hours * days;
+
+  var odCost  = prices.od * totalH;
+  var spotCost = canStop && prices.spot ? prices.spot * totalH : null;
+  var ri1Cost = prices.ri1 ? prices.ri1 * totalH : null;
+
+  /* Determine winner */
+  var winner = 'on-demand';
+  var winnerCost = odCost;
+
+  if (spotCost !== null && spotCost < winnerCost) { winner = 'spot'; winnerCost = spotCost; }
+  if (ri1Cost !== null && ri1Cost < winnerCost)   { winner = 'reserved'; winnerCost = ri1Cost; }
+
+  var reasons = {
+    'on-demand': 'On-demand is best for your workload. At ' + hours + 'hr/day for ' + months + ' months, the flexibility outweighs commitment discounts — and without interruptibility, spot is not viable.',
+    'spot': 'Spot instances are best for your workload. Since your workload is interruptible (with checkpointing), you save ' + Math.round((1 - spotCost / odCost) * 100) + '% vs on-demand for ' + fmtLarge(spotCost) + ' total.',
+    'reserved': 'Reserved instances are best for your workload. Running ' + hours + 'hr/day consistently for ' + months + ' months justifies a 1-year commitment, saving ' + Math.round((1 - ri1Cost / odCost) * 100) + '% vs on-demand.'
+  };
+
+  var winnerHtml = '<div class="rec-winner-label">Recommended pricing model</div>';
+  winnerHtml += '<div class="rec-winner-model">' + (winner === 'on-demand' ? 'On-Demand' : winner === 'spot' ? 'Spot / Preemptible' : 'Reserved Instance (1yr)') + '</div>';
+  winnerHtml += '<div class="rec-winner-reason">' + reasons[winner] + '</div>';
+
+  var opts = [
+    { name: 'On-Demand', cost: odCost, note: prices.od + '/hr × ' + totalH.toFixed(0) + ' hrs' },
+    { name: 'Spot', cost: spotCost, note: canStop ? (prices.spot || 'N/A') + '/hr estimated' : 'Not viable (non-interruptible)' },
+    { name: 'Reserved 1yr', cost: ri1Cost, note: prices.ri1 ? prices.ri1 + '/hr committed' : 'Not available for this GPU' }
+  ];
+
+  var compareHtml = '';
+  for (var i = 0; i < opts.length; i++) {
+    var opt = opts[i];
+    var isWinner = (i === 0 && winner === 'on-demand') || (i === 1 && winner === 'spot') || (i === 2 && winner === 'reserved');
+    var costClass = isWinner ? 'best' : (opt.cost === null ? '' : 'worst');
+    compareHtml += '<div class="rec-option' + (isWinner ? ' winner' : '') + '">';
+    compareHtml += '<div class="rec-option-name">' + opt.name + '</div>';
+    compareHtml += '<div class="rec-option-cost ' + costClass + '">' + (opt.cost !== null ? fmtLarge(opt.cost) : '—') + '</div>';
+    compareHtml += '<div class="rec-option-note">' + opt.note + '</div>';
+    compareHtml += '</div>';
+  }
+
+  document.getElementById('rec-winner').innerHTML = winnerHtml;
+  document.getElementById('rec-compare').innerHTML = compareHtml;
+  document.getElementById('rec-result').className = 'rec-result visible';
+}
+
+/* ── LLM CALCULATOR ── */
+function calcLLM() {
+  var inputTok  = parseInt(document.getElementById('llm-input-tok').value) || 0;
+  var outputTok = parseInt(document.getElementById('llm-output-tok').value) || 0;
+  var reqDay    = parseInt(document.getElementById('llm-req-day').value) || 0;
+  var tier      = document.getElementById('llm-tier').value;
+
+  var inputMPerMonth  = (inputTok  * reqDay * 30) / 1000000;
+  var outputMPerMonth = (outputTok * reqDay * 30) / 1000000;
+
+  var providers = LLM_PROVIDERS[tier] || LLM_PROVIDERS['production'];
+  var costs = [];
+
+  for (var i = 0; i < providers.length; i++) {
+    var p = providers[i];
+    var cost = (inputMPerMonth * p.input) + (outputMPerMonth * p.output);
+    costs.push({ name: p.name, model: p.model, cost: cost, inputCost: inputMPerMonth * p.input, outputCost: outputMPerMonth * p.output });
+  }
+
+  /* Sort by cost */
+  costs.sort(function(a, b) { return a.cost - b.cost; });
+
+  var html = '<div class="llm-result-title">// Monthly LLM API Cost Comparison (' + reqDay.toLocaleString() + ' req/day)</div>';
+  html += '<div class="llm-provider-grid">';
+
+  for (var j = 0; j < costs.length; j++) {
+    var c = costs[j];
+    var costClass = j === 0 ? 'best' : (j === costs.length - 1 ? 'worst' : 'mid');
+    html += '<div class="llm-provider-card' + (j === 0 ? ' cheapest' : '') + '">';
+    html += '<div class="llm-prov-name">' + c.name + (j === 0 ? ' ✓' : '') + '</div>';
+    html += '<div class="llm-prov-model">' + c.model + '</div>';
+    html += '<div class="llm-prov-cost ' + costClass + '">' + (c.cost < 0.01 ? '$0.00*' : fmtLarge(c.cost)) + '</div>';
+    if (c.cost > 0) {
+      html += '<div class="llm-prov-breakdown">Input: ' + fmtLarge(c.inputCost) + ' / Output: ' + fmtLarge(c.outputCost) + '</div>';
+    } else {
+      html += '<div class="llm-prov-breakdown">Infrastructure cost only</div>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  document.getElementById('llm-result').innerHTML = html;
+  document.getElementById('llm-result').className = 'llm-result visible';
+}
+
+/* ── FAQ ── */
+function toggleFaq(el) {
+  var item = el.parentNode;
+  var isOpen = item.className.indexOf('open') !== -1;
+  var all = document.querySelectorAll('.faq-item');
+  for (var i = 0; i < all.length; i++) { all[i].className = 'faq-item'; }
+  if (!isOpen) { item.className = 'faq-item open'; }
+}
+
+/* ── INIT ── */
+renderGPUTable('all');
+
+</script>
 </body>
 </html>
